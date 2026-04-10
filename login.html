@@ -766,6 +766,33 @@ input[type="file"]:hover {
 </div>
 
 <script>
+
+// COOKIE FUNCTIONS (NEW)
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i=0;i < ca.length;i++) {
+        let c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length,c.length));
+    }
+    return null;
+}
+
+function deleteCookie(name) {
+    document.cookie = name + '=; Max-Age=-99999999;';
+}
+
 // Database simulation using localStorage
 const DB = {
     getStudents: () => JSON.parse(localStorage.getItem('nba_students') || '[]'),
@@ -838,6 +865,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     // Check admin login
     if (username === ADMIN.username && password === ADMIN.password) {
         DB.setCurrentUser(ADMIN);
+        setCookie("nba_user", JSON.stringify(ADMIN), 7);
         showDashboard('admin');
         return;
     }
@@ -851,6 +879,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     
     if (student) {
         DB.setCurrentUser(student);
+        setCookie("nba_user", JSON.stringify(student), 7);
         showDashboard('student');
     } else {
         errorMsg.textContent = 'Invalid credentials. Please try again.';
@@ -878,6 +907,7 @@ function showDashboard(role) {
 // Logout
 function logout() {
     DB.setCurrentUser(null);
+    deleteCookie("nba_user");
     location.reload();
 }
 
@@ -1168,6 +1198,17 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// AUTO LOGIN FROM COOKIE
+window.addEventListener("load", function() {
+    const savedUser = getCookie("nba_user");
+    if (savedUser) {
+        const user = JSON.parse(savedUser);
+        DB.setCurrentUser(user);
+        showDashboard(user.role);
+    }
+});
+
 </script>
 
 </body>
