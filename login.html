@@ -912,8 +912,11 @@ function logout() {
     // Delete the cookie
     deleteCookie("nba_user");
     
-    // Hide dashboard and show auth overlay
-    document.getElementById('dashboardContainer').classList.remove('active');
+    // Hide both dashboards
+    document.getElementById('adminDashboard').classList.remove('active');
+    document.getElementById('studentDashboard').classList.remove('active');
+    
+    // Show auth overlay
     document.getElementById('authOverlay').classList.remove('hidden');
     
     // Reset the login form
