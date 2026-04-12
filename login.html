@@ -906,9 +906,21 @@ function showDashboard(role) {
 
 // Logout
 function logout() {
-    DB.setCurrentUser(null);
+    // Clear localStorage first
+    localStorage.removeItem('nba_current_user');
+    
+    // Delete the cookie
     deleteCookie("nba_user");
-    location.reload();
+    
+    // Hide dashboard and show auth overlay
+    document.getElementById('dashboardContainer').classList.remove('active');
+    document.getElementById('authOverlay').classList.remove('hidden');
+    
+    // Reset the login form
+    document.getElementById('loginForm').reset();
+    
+    // Clear any error messages
+    document.getElementById('errorMsg').classList.add('hidden');
 }
 
 // Tab switching
